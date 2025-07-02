@@ -1,5 +1,9 @@
 ## 🟢 1. Planning-Agent Prompt
 
+✅ **Claude Sonnet 3.7 Thinking (1.25x)**
+
+→ Đây chính là model mà trước đó bạn được khuyên dùng để plan, vì nó **chuyên về reasoning, chia nhỏ bài toán**, cực hợp để vẽ plan + thiết kế class.
+
 ```
 You are a Senior Software Architect with excellent reasoning and system design skills.
 
@@ -35,11 +39,18 @@ Your tasks:
 """
 [👉👉 Dán yêu cầu tính năng của bạn vào đây 👈👈]
 """
+
 ```
 
 ---
 
 ## 🟢 2. Skeleton-Generator-Agent Prompt
+
+✅ **GPT-4o hoặc o3-mini (0.33x)**
+
+→ Task này không cần suy nghĩ sâu, chỉ cần generate class stub, dùng GPT-4o là quá ổn vì bạn đã “Included” sẵn → tiết kiệm cost.
+
+→ Nếu muốn giảm chi phí hơn nữa mà chấp nhận tốc độ chậm nhẹ, thử **o3-mini (0.33x)**.
 
 ```
 You are a Skeleton Generator Agent.
@@ -55,15 +66,22 @@ Requirements:
 - Add import/using statements if needed.
 - Ensure the files are syntactically correct.
 
-## Class diagram:
+## Class diagra
 """
 [Paste class diagram from Planning-Agent here]
 """
+
 ```
 
 ---
 
 ## 🟢 3. Implement-Agent Prompt
+
+✅ **GPT-4.1 hoặc GPT-4o**
+
+→ Task này cần hiểu rõ context + viết implement code chuẩn, GPT-4.1 bạn đang có **Included**, quá perfect.
+
+→ GPT-4o cũng mạnh, nhưng GPT-4.1 thường chính xác hơn về các chi tiết ngữ nghĩa logic.
 
 ```
 You are an Implement Agent.
@@ -87,11 +105,18 @@ Requirements:
 """
 [Paste data flow explanation from Planning-Agent]
 """
+
 ```
 
 ---
 
 ## 🟢 4. Review-Agent Prompt
+
+✅ **Gemini 2.5 Pro (Preview)** hoặc **Claude Sonnet 4**
+
+→ Review cần khả năng so sánh, phát hiện smell qua nhiều file → Gemini 2.5 Pro rất mạnh ở **context rộng + code critique**.
+
+→ Nếu muốn giữ “team Claude” đồng bộ, **Claude Sonnet 4** cũng rất ổn.
 
 ```
 You are a Senior Code Reviewer Agent.
@@ -109,13 +134,29 @@ Requirements:
 """
 [Paste generated code from Implement-Agent here]
 """
+
 ```
 
 ---
 
 🎯 **Chốt nhanh**:
 
-* Planning → Phân tích & thiết kế → Class diagram + Data flow
-* Skeleton → Sinh file class trống → đảm bảo build OK
-* Implement → Viết chi tiết logic + unit test
-* Review → Kiểm tra chất lượng code & test coverage
+- Planning → Phân tích & thiết kế → Class diagram + Data flow
+- Skeleton → Sinh file class trống → đảm bảo build OK
+- Implement → Viết chi tiết logic + unit test
+- Review → Kiểm tra chất lượng code & test coverage
+
+| Agent | Model bạn nên dùng |
+| --- | --- |
+| Planning | Claude Sonnet 3.7 Thinking |
+| Skeleton Generator | GPT-4o hoặc o3-mini |
+| Implement | GPT-4.1 |
+| Review | Gemini 2.5 Pro hoặc Claude 4 |
+
+---
+
+🎯 **Lý do chính chọn vậy**:
+
+- Claude Sonnet 3.7 Thinking: reasoning đỉnh → planning chuẩn.
+- GPT-4o/GPT-4.1: implement siêu chính xác → giảm bug.
+- Gemini 2.5 Pro: review code đa chiều, phát hiện lỗi tiềm ẩn.
