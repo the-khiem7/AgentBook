@@ -1,3 +1,77 @@
+# VitaFlow Agent-Driven Development Guide
+
+## 📁 File Naming Convention
+
+All documentation follows this naming pattern:
+```
+[Section].[SubSection].[Stage].[Component].[Type].md
+```
+
+The naming convention uses parallel numeric-textual pairs:
+
+1. **Phase Level**
+   - **Section**: Numeric identifier (1, 2, 3)
+     - 1: Planning Phase
+     - 2: Skeleton Generate Phase
+     - 3: Implementation Phase
+     - 4: Review Phase
+   - **Stage**: Textual name of the phase
+     - Planning: For Section 1
+     - Skeleton: For Section 2
+     - Implementation: For Section 3
+     - Review: For Section 4
+
+2. **Step Level**
+   - **SubSection**: Numeric step identifier (1, 2, 3, etc.)
+     - 0: Roadmap
+     - 1: First component
+     - 2: Second component, etc.
+   - **Component**: Textual name of the step (framework-agnostic)
+     - Roadmap: For SubSection 0 (Project overview)
+     - Domain: For SubSection 1 (Core business logic)
+     - Data: For SubSection 2 (Data access/storage)
+     - Business: For SubSection 3 (Business rules/services)
+     - Presentation: For SubSection 4 (UI/API/Interface)
+     - Quality: For SubSection 5 (Testing/Validation)
+
+3. **Purpose Level**
+   - **Type**: Document's role
+     - `Prompt.md` - AI agent input files
+     - `Guide.md` - Implementation reference
+     - `Scenarios.md` - Developer documentation
+
+File structure breakdown:
+```
+2.1.Skeleton.Domain.Prompt.md
+│ │ │        │     └─ Type (Purpose)
+│ │ │        └─ Component (Step name)
+│ │ └─ Stage (Phase name)
+│ └─── SubSection (Step #)
+└───── Section (Phase #)
+
+Example mappings:
+| Phase Level | | Step Level | |
+|------------|--|------------|--|
+| Section | Stage | SubSection | Component |
+| 1 | Planning | 0 | Roadmap |
+| 2 | Skeleton | 1 | Domain |
+| 3 | Implementation | 2 | Data |
+| | | 3 | Business |
+| | | 4 | Presentation |
+| | | 5 | Quality |
+
+2.0.Skeleton.Roadmap.md                # Phase 2, Step 0: Project Structure
+2.1.Skeleton.Domain.Prompt.md          # Phase 2, Step 1: Core Business Models
+2.2.Skeleton.Data.Guide.md            # Phase 2, Step 2: Data Layer Design
+2.3.Skeleton.Business.Scenarios.md     # Phase 2, Step 3: Service Layer Design
+```
+
+Exceptions:
+- Roadmap files use [Section].0.[Stage].Roadmap.md (e.g., 3.0.Implementation.Roadmap.md)
+- Stage matches the section's main purpose (Planning, Skeleton, Implementation)
+
+---
+
 ## 🟢 1. Planning-Agent Prompt
 
 ✅ **Claude Sonnet 3.7 Thinking (1.25x)**
@@ -66,7 +140,7 @@ Requirements:
 - Add import/using statements if needed.
 - Ensure the files are syntactically correct.
 
-## Class diagra
+## Class diagram
 """
 [Paste class diagram from Planning-Agent here]
 """
@@ -160,3 +234,48 @@ Requirements:
 - Claude Sonnet 3.7 Thinking: reasoning đỉnh → planning chuẩn.
 - GPT-4o/GPT-4.1: implement siêu chính xác → giảm bug.
 - Gemini 2.5 Pro: review code đa chiều, phát hiện lỗi tiềm ẩn.
+
+---
+
+## 📂 Project Structure
+
+The project is organized into three main sections:
+
+### 1️⃣ Planning Phase
+- `1.0.Planning.Roadmap.md`
+- `1.1.Planning.Requirements.Prompt.md`
+- `1.2.Planning.Output.Guide.md`
+
+### 2️⃣ Skeleton Generation Phase
+- `2.0.Skeleton.Roadmap.md`
+- `2.1.Skeleton.ProjectStructure.Prompt.md`
+- `2.2.Skeleton.Domain.Prompt.md`
+- `2.3.Skeleton.Repositories.Prompt.md`
+- `2.4.Skeleton.Services.Prompt.md`
+- `2.5.Skeleton.PageModels.Prompt.md`
+
+Each file follows [Section].[SubSection].[Stage].[Component].[Type].md pattern where [Stage] is "Skeleton" for this phase.
+
+### 3️⃣ Implementation Phase
+Components are broken down into three document types:
+- **Prompt** - AI agent instructions
+- **Guide** - Implementation references
+- **Scenarios** - Developer documentation
+
+Example structure:
+```
+3.Implementation/
+├── 3.0.Implementation.Roadmap.md
+├── 3.1.Implementation.Repository.Prompt.md
+├── 3.1.Implementation.Repository.Guide.md
+├── 3.1.Implementation.Repository.Scenarios.md
+├── 3.2.Implementation.Services.Prompt.md
+├── 3.2.Implementation.Service.Guide.md
+└── ...
+```
+
+This structure ensures:
+1. Clear separation between AI instructions and human documentation
+2. Consistent naming across all project phases
+3. Easy navigation between related documents
+4. Progressive implementation from planning to review
