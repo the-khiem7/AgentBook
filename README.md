@@ -1,4 +1,8 @@
-# VitaFlow Agent-Driven Development Guide
+# 📚 AgentBook
+
+🤖 **Your AI-Driven Software Development Companion**
+
+> *A framework-agnostic approach to structured software development using specialized AI agents*
 
 ## 📁 File Naming Convention
 
@@ -23,16 +27,32 @@ The naming convention uses parallel numeric-textual pairs:
 
 2. **Step Level**
    - **SubSection**: Numeric step identifier (1, 2, 3, etc.)
-     - 0: Roadmap
-     - 1: First component
-     - 2: Second component, etc.
-   - **Component**: Textual name of the step (framework-agnostic)
-     - Roadmap: For SubSection 0 (Project overview)
-     - Domain: For SubSection 1 (Core business logic)
-     - Data: For SubSection 2 (Data access/storage)
-     - Business: For SubSection 3 (Business rules/services)
-     - Presentation: For SubSection 4 (UI/API/Interface)
-     - Quality: For SubSection 5 (Testing/Validation)
+     - 0: Project Overview
+     - 1: Foundation Layer
+     - 2: Core Layer
+     - 3: Feature Layer
+     - 4: Interface Layer
+     - 5: Quality Layer
+
+   - **Component**: Textual name matching your project needs
+     For example, in a web application:
+     ```
+     0.Overview    → Roadmap
+     1.Foundation  → Domain/Models
+     2.Core        → Data/Storage
+     3.Feature     → Services/Logic
+     4.Interface   → UI/API
+     5.Quality     → Testing
+     ```
+     Or in a frontend project:
+     ```
+     0.Overview    → Roadmap
+     1.Foundation  → Components
+     2.Core        → State
+     3.Feature     → Routes
+     4.Interface   → Pages
+     5.Quality     → Testing
+     ```
 
 3. **Purpose Level**
    - **Type**: Document's role
@@ -48,23 +68,25 @@ File structure breakdown:
 │ │ └─ Stage (Phase name)
 │ └─── SubSection (Step #)
 └───── Section (Phase #)
+```
 
 Example mappings:
-| Phase Level | | Step Level | |
-|------------|--|------------|--|
-| Section | Stage | SubSection | Component |
-| 1 | Planning | 0 | Roadmap |
-| 2 | Skeleton | 1 | Domain |
-| 3 | Implementation | 2 | Data |
-| | | 3 | Business |
-| | | 4 | Presentation |
-| | | 5 | Quality |
 
-2.0.Skeleton.Roadmap.md                # Phase 2, Step 0: Project Structure
-2.1.Skeleton.Domain.Prompt.md          # Phase 2, Step 1: Core Business Models
-2.2.Skeleton.Data.Guide.md            # Phase 2, Step 2: Data Layer Design
-2.3.Skeleton.Business.Scenarios.md     # Phase 2, Step 3: Service Layer Design
-```
+| Section | Stage          | SubSection | Component   |
+|---------|----------------|------------|-------------|
+| 1       | Planning       | 0          | Roadmap     |
+| 2       | Skeleton       | 1          | Domain      |
+| 3       | Implementation | 2          | Data        |
+|         |                | 3          | Business    |
+|         |                | 4          | Presentation|
+|         |                | 5          | Quality     |
+
+| File Name | Description |
+|-----------|-------------|
+| 2.0.Skeleton.Roadmap.md | Phase 2, Step 0: Project Structure |
+| 2.1.Skeleton.Domain.Prompt.md | Phase 2, Step 1: Core Business Models |
+| 2.2.Skeleton.Data.Guide.md | Phase 2, Step 2: Data Layer Design |
+| 2.3.Skeleton.Business.Scenarios.md | Phase 2, Step 3: Service Layer Design |
 
 Exceptions:
 - Roadmap files use [Section].0.[Stage].Roadmap.md (e.g., 3.0.Implementation.Roadmap.md)
