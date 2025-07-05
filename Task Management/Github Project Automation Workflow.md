@@ -48,6 +48,8 @@ REPO_NAME=$(echo $REPO_INFO | cut -d'/' -f2)
 # List all milestones using current repository context
 gh api repos/$REPO_OWNER/$REPO_NAME/milestones --jq '.[] | {title, description}'
 
+gh api repos/the-khiem7/VitaFlow.RazorPage/milestones --jq '.[] | {title, description}'
+
 # Create a bash function for milestone operations
 gh_milestone() {
   if [ "$1" = "list" ]; then
