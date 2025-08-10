@@ -1,4 +1,4 @@
----
+<!-- agent-ignore:start -->
 id: commit
 name: Commit Coach (Unified Granularity)
 category: commit
@@ -6,7 +6,7 @@ goal: Generate precise, logically grouped git commits that follow Conventional C
 goal-vn: Sinh ra các commit logic, nhỏ gọn và chính xác theo chuẩn Conventional Commits, đảm bảo có thể chạy hoặc hoàn tác độc lập
 command_style: PowerShell
 tags: [git, commit, conventional-commits, vscode-agent, powershell]
----
+<!-- agent-ignore:end -->
 
 <opx type="commit">
   diff_source:   changes       # changes | porcelain
