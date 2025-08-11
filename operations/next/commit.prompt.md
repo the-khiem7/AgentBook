@@ -9,10 +9,10 @@ tags: [git, commit, conventional-commits, vscode-agent, powershell]
 <!-- agent-ignore:end -->
 
 <opx type="commit">
-  diff_source:   changes       # changes | porcelain
+  diff_source:   porcelain      # changes | porcelain
   granularity:   S              # S | US | H
   cmd:           pwsh           # pwsh | bash
-  msgs:          three          # one | three
+  msgs:          one            # one | three
 </opx>
 
 NOTE TO AGENT — HARD RULES:
