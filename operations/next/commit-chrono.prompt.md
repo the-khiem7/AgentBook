@@ -1,64 +1,65 @@
 <!-- agent-ignore:start -->
 id: commit-chrono
-name: Commit Coach (Chronobreak, S/US/H)
+name: Commit Coach (Chrono Agent)
 category: commit
-goal: Produce clean, logically split Conventional Commits and simulate a realistic commit timeline (chronobreak) using safe timestamp techniques
-goal-vn: Tạo các commit tách logic theo Conventional Commits và mô phỏng dòng thời gian commit (chronobreak) bằng cách đặt timestamp an toàn
+goal: Produce human-like, chronologically consistent Conventional Commits with realistic timestamps (Chronobreak mode)
+goal-vn: Sinh ra commit mô phỏng dòng thời gian thực tế của lập trình viên, tuân thủ Conventional Commits và có timestamp giả lập tự nhiên
 command_style: PowerShell
-tags: [git, commit, conventional-commits, vscode-agent, powershell, chronobreak]
+tags: [git, commit, conventional-commits, powershell, chronobreak, vscode-agent]
 <!-- agent-ignore:end -->
 
 <opx type="commit-chrono">
-  diff_source:      porcelain     # changes | porcelain
-  granularity:      S             # S | US | H
-  cmd:              pwsh          # pwsh | bash
-  msgs:             one           # one | three
-
-  chrono_mode:      safe_env      # safe_env | admin_set_date
-  chrono_timezone:  +0700         # e.g., +0700, +0000, -0500
-  chrono_start:     2025-07-24    # YYYY-MM-DD (first day to use)
-  chrono_days:      3             # spread commits across N days (>=1)
-  chrono_per_day:   1..3          # random range, e.g., 1..2 or 2..4
-  chrono_hours:     09..18        # working hour window (HH..HH, 24h)
+  diff_source:      porcelain       # changes | porcelain
+  granularity:      S               # S | US | H
+  cmd:              pwsh            # pwsh | bash
+  msgs:             one             # one | three
+  chrono_mode:      safe_env        # safe_env | admin_set_date
+  chrono_start:     2025-07-24      # YYYY-MM-DD
+  chrono_days:      5               # spread across N days
+  chrono_per_day:   1..2            # range (min..max)
+  chrono_hours:     09..18          # working hour window
+  chrono_timezone:  +0700           # timezone suffix
+  show_hygiene:     off             # on | off
 </opx>
 
 NOTE TO AGENT — HARD RULES:
 !!! DO NOT PLAN OR EXECUTE. !!!
 This is a SINGLE-SHOT OUTPUT prompt.
-Do NOT create todos, tasks, steps, progress logs, checkpoints, or multi-phase reasoning.
+You must NOT create todos, tasks, steps, progress logs, or multi-phase reasoning.
 
 TOOLS FORBIDDEN:
 Do not call repository.change-list, get_changed_files, or any Git API tool.
 Read text context only. All analysis is textual, not procedural.
 
 INPUT SOURCES:
-- If diff_source=changes → read ONLY the #changes context (plural). Do not attempt to list or fetch files.
+- If diff_source=changes → read ONLY the #changes context (plural).  
 - If diff_source=porcelain → wait for pasted output of `git status --porcelain=v1` and analyze that text only.
 
 IF #changes IS EMPTY:
-1) Print the echo line:
+1) Print the echo line:  
    `Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>; ChronoMode=<chrono_mode>.`
 2) Print exactly: `No local changes`
 3) Stop.
 
 CHRONOBREAK POLICY:
-- Generate a realistic timeline for the commits based on:
-  `chrono_start`, `chrono_days`, `chrono_per_day`, `chrono_hours`, `chrono_timezone`.
-- Randomize minutes (and hours within the window) without collisions within the same day.
-- Maintain dependency order across commits (e.g., schema → code → tests).
-- Do NOT alter global system time unless chrono_mode=admin_set_date (see warnings).
-- Prefer safe_env mode: set `GIT_AUTHOR_DATE` and `GIT_COMMITTER_DATE` per commit.
-- Always print a final “Reset environment” snippet to clear env variables after the last commit.
-
-OUTPUT MUST MATCH EXACTLY THE FOLLOWING SCHEMA — no commentary, no setup, no reasoning logs.
+- Simulate a **realistic commit timeline** using `chrono_*` directives:
+  - Start day = `chrono_start`
+  - Duration = `chrono_days`
+  - Commits per day = random(`chrono_per_day`)
+  - Hours window = `chrono_hours` (local developer hours)
+  - Timezone = `chrono_timezone`
+- Always maintain natural order: **delete → add → modify**.
+- Randomize hours and minutes per commit (no duplicate minute).
+- Do NOT alter global clock unless `chrono_mode=admin_set_date`.
+- In safe_env mode, set `$env:GIT_AUTHOR_DATE` & `$env:GIT_COMMITTER_DATE`.
+- Print one final block to reset these env vars after all commits.
 
 ---
 
-# 🧩 Commit Chronobreak — Conventional Commit Agent (Single-Shot)
+# 🧩 Commit Coach (Chronobreak Agent) — Multi-Granularity Conventional Commit Simulator
 
-Interpret the provided diff content (from **#changes** or porcelain output) and produce:
-- a clean commit breakdown (S/US/H granularity), and
-- PowerShell commit commands that **simulate timestamps** per the chronobreak configuration.
+Interpret provided diffs (from **#changes** or porcelain output) and generate
+chronologically distributed commits with Conventional Commit messages and timestamps.
 
 ---
 
@@ -69,88 +70,96 @@ Print the directive line:
 ---
 
 ## B) Summary
-- Added / Modified / Deleted / Renamed counts
-- Risk level (Low / Medium / High)
-- Impacted scopes/modules
+- Added / Modified / Deleted / Renamed counts  
+- Risk level (Low / Medium / High)  
+- Impacted scopes or modules  
 
 ---
 
-## C) Commit Breakdown (with Chrono Schedule)
-List commits in order (`Commit 1`, `Commit 2`, …). For each commit include:
-- **Scope** — affected domain or directory
-- **Timestamp** — `YYYY-MM-DD HH:MM:SS <chrono_timezone>` (scheduled value)
-- **Rationale** — why separated
-- **Impact/Test** — what to verify
-- If `granularity=H`: show per-hunk intent or file-line ranges
+## B2) Chrono Simulation Policy
+- Start day: `<chrono_start>`  
+- Duration: `<chrono_days>` days  
+- Commits/day: random in `<chrono_per_day>`  
+- Time window: `<chrono_hours>` local (`<chrono_timezone>`)  
+- Mode: `<chrono_mode>`  
+- Each commit must have a unique timestamp in its day.  
+- Show headers:
+```
 
-The scheduled timestamps must align with:
-- start day = `chrono_start`
-- number of days = `chrono_days`
-- commits per day = random in `chrono_per_day` range
-- working hours = inside `chrono_hours` window
-- timezone suffix = `chrono_timezone`
+# === Day YYYY-MM-DD ===
+
+````
+
+---
+
+## C) Commit Breakdown (with Schedule)
+List commits in order (`Commit 1`, `Commit 2`, …):
+Each must include:
+- **Scope** — module or domain affected  
+- **Timestamp** — `YYYY-MM-DD HH:MM:SS <chrono_timezone>`  
+- **Rationale** — why separated  
+- **Impact/Test** — what to verify  
+- If `granularity=H` → describe per-hunk intent or line ranges  
 
 ---
 
 ## D) Commit Message Suggestions
-For each commit group:
-- If `msgs=one` → one message
-- If `msgs=three` → three variants
-- Use Conventional Commits: `type(scope): subject` (≤72 chars)
-- Optional body bullets / footer (`Closes #123`) when relevant
+For each commit:
+- If `msgs=one` → 1 variant  
+- If `msgs=three` → 3 variants  
+- Format: `type(scope): subject` (≤72 chars)  
+- Optional body bullets or footer (`Closes #123`)  
 
 ---
 
 ## E) Commands (print only — do not execute)
-Use PowerShell (`cmd=pwsh`). For each commit, **set the timestamp**, stage files, then commit.
+Follow the chosen `cmd` syntax.  
+For PowerShell (`cmd=pwsh`), output should include timestamps.
 
-**PowerShell pattern (safe_env, recommended)**
+### 🕓 Safe Environment Mode (recommended)
 ```powershell
-# Commit <n>: <short description>
-$files = @("path\\to\\file1","path\\to\\file2")
+# === Day 2025-07-25 ===
+$files = @("src\\auth\\AuthService.cs")
 git add $files
 
-# Set per-commit timestamp (safe_env mode)
-$when = "<YYYY-MM-DD HH:MM:SS> <TZ>"   # e.g., 2025-07-24 09:17:00 +0700
+# Set commit timestamp
+$when = "2025-07-25 10:18:00 +0700"
 $env:GIT_AUTHOR_DATE    = $when
 $env:GIT_COMMITTER_DATE = $when
 
-$subject = "<type(scope): subject>"
-$body = @("- detail 1","- detail 2")
+$subject = "feat(auth): implement new authentication flow"
+$body = @(
+"- Introduced token-based auth",
+"- Simplified refresh mechanism"
+)
 git commit -m $subject `
-           -m $body[0] `
-           -m $body[1]
+         -m $body[0] `
+         -m $body[1]
 ````
 
-**Rename**
+### ⚙️ Admin Mode (optional)
 
 ```powershell
-git mv "old\\path\\file.cs" "new\\path\\file.cs"
-git commit -m "refactor(core): rename file to match type name"
+# WARNING: Admin-only (affects system time)
+Set-Date -Date "2025-07-25 10:18"
+git commit -m "refactor(core): migrate to new service layout"
+# Reset after commit
+Set-Date -Date (Get-Date)
 ```
 
-**Hunk Mode**
+### 🔁 Rename or Hunk
 
 ```powershell
-git add -p "src\\module\\BigFile.cs"
+git mv "old\\UserService.cs" "new\\UserService.cs"
+git commit -m "refactor(core): rename UserService for clarity"
+
+git add -p "src\\services\\OrderHandler.cs"
 ```
 
-**(Optional) Admin mode warning**
-If `chrono_mode=admin_set_date`, print commands like:
+### 🔚 Reset Environment
 
 ```powershell
-# WARNING: Admin-only; affects system time. Reset immediately after.
-# Set-Date -Date "2025-07-24 11:05:00"
-# ... do the commit ...
-# Set-Date -Date (Get-Date)  # restore actual system time
-```
-
-(Prefer `safe_env` unless you explicitly require system-time changes.)
-
-**Reset environment (always print once at the end)**
-
-```powershell
-# Reset env timestamps
+# === Reset env timestamps ===
 Remove-Item Env:GIT_AUTHOR_DATE    -ErrorAction SilentlyContinue
 Remove-Item Env:GIT_COMMITTER_DATE -ErrorAction SilentlyContinue
 ```
@@ -159,9 +168,11 @@ Remove-Item Env:GIT_COMMITTER_DATE -ErrorAction SilentlyContinue
 
 ## F) Hygiene
 
-* Warn if `.env`, secrets, or credentials are detected
-* Recommend tests/lint/build for affected modules
-* Confirm dependency/lockfile integrity before push
+(Shown only if `show_hygiene=on`)
+
+* Warn if `.env`, secrets, or credentials detected.
+* Recommend running relevant tests/lint/build for affected modules.
+* Confirm dependency and lockfile integrity before push.
 
 ---
 
