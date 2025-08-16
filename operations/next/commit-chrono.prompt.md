@@ -8,17 +8,63 @@ command_style: PowerShell
 tags: [git, commit, conventional-commits, powershell, chronobreak, vscode-agent]
 <!-- agent-ignore:end -->
 
+<!-- 📘 OPX CONFIG GUIDE
+
+diff_source: Source of diff content.
+  → "changes" = analyze #changes context (AI agent internal)
+  → "porcelain" = analyze pasted output from `git status --porcelain=v1`
+
+granularity: Defines how small each commit should be.
+  → S = small (feature or business-level)
+  → US = ultra-small (atomic, line-level)
+  → H = hunk-based (commit by diff chunk)
+
+cmd: Target shell syntax for commit examples.
+  → "pwsh" = PowerShell, "bash" = Linux/macOS shell.
+
+msgs: Number of commit message suggestions per commit group.
+  → "one" = single best message, "three" = 3 alternative options.
+
+chrono_mode: How timestamps are simulated.
+  → "safe_env" = use GIT_AUTHOR_DATE and GIT_COMMITTER_DATE (safe)
+  → "admin_set_date" = use PowerShell Set-Date (requires admin)
+
+chrono_start:
+  → The first simulated date (YYYY-MM-DD).
+  → All commit timestamps will be distributed from this day onward.
+
+chrono_days: Total number of days to spread the commits.
+
+chrono_per_day: Range for how many commits per day
+  → "1..2" or "2..4".
+
+chrono_hours: Working-hour window (24h format)
+  → "09..18" means from 9 AM to 6 PM.
+
+chrono_timezone: Timezone suffix for simulated timestamps 
+  → (e.g., +0700 for Vietnam).
+
+show_hygiene: Controls whether to show hygiene/test/build reminders at the end.
+  → "on" = show; "off" = hide.
+-->
+
 <opx type="commit-chrono">
+
+  # === Core ===
   diff_source:      porcelain       # changes | porcelain
   granularity:      S               # S | US | H
   cmd:              pwsh            # pwsh | bash
   msgs:             one             # one | three
+
+  # === Chrono Simulation ===
   chrono_mode:      safe_env        # safe_env | admin_set_date
   chrono_start:     2025-07-24      # YYYY-MM-DD
-  chrono_days:      5               # spread across N days
-  chrono_per_day:   1..2            # range (min..max)
-  chrono_hours:     09..18          # working hour window
-  chrono_timezone:  +0700           # timezone suffix
+  chrono_days:      5               # total days
+  chrono_per_day:   1..2            # commits/day range
+  chrono_hours:     09..18          # work hours
+  chrono_timezone:  +0700           # timezone offset
+
+  # === Optional ===
   show_hygiene:     off             # on | off
 </opx>
 
@@ -26,6 +72,8 @@ NOTE TO AGENT — HARD RULES:
 !!! DO NOT PLAN OR EXECUTE. !!!
 This is a SINGLE-SHOT OUTPUT prompt.
 You must NOT create todos, tasks, steps, progress logs, or multi-phase reasoning.
+⚠️ FORBIDDEN:
+Do NOT call any tool or command automatically — output only text.
 
 TOOLS FORBIDDEN:
 Do not call repository.change-list, get_changed_files, or any Git API tool.
@@ -46,25 +94,23 @@ CHRONOBREAK POLICY:
   - Start day = `chrono_start`
   - Duration = `chrono_days`
   - Commits per day = random(`chrono_per_day`)
-  - Hours window = `chrono_hours` (local developer hours)
+  - Hours window = `chrono_hours`
   - Timezone = `chrono_timezone`
-- Always maintain natural order: **delete → add → modify**.
-- Randomize hours and minutes per commit (no duplicate minute).
-- Do NOT alter global clock unless `chrono_mode=admin_set_date`.
-- In safe_env mode, set `$env:GIT_AUTHOR_DATE` & `$env:GIT_COMMITTER_DATE`.
-- Print one final block to reset these env vars after all commits.
+- Maintain order: **delete → add → modify**.
+- Randomize time per commit (unique minute per day).
+- Use `$env:GIT_AUTHOR_DATE` and `$env:GIT_COMMITTER_DATE` (safe_env).
+- Reset environment variables at end.
 
 ---
 
 # 🧩 Commit Coach (Chronobreak Agent) — Multi-Granularity Conventional Commit Simulator
 
-Interpret provided diffs (from **#changes** or porcelain output) and generate
-chronologically distributed commits with Conventional Commit messages and timestamps.
+Interpret diffs (from **#changes** or porcelain)  
+and generate chronologically distributed commits with Conventional Commit messages.
 
 ---
 
 ## A) Echo
-Print the directive line:
 `Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>; ChronoMode=<chrono_mode>.`
 
 ---
@@ -82,8 +128,8 @@ Print the directive line:
 - Commits/day: random in `<chrono_per_day>`  
 - Time window: `<chrono_hours>` local (`<chrono_timezone>`)  
 - Mode: `<chrono_mode>`  
-- Each commit must have a unique timestamp in its day.  
-- Show headers:
+- Each commit has unique timestamp.  
+- Print headers:
 ```
 
 # === Day YYYY-MM-DD ===
@@ -93,30 +139,25 @@ Print the directive line:
 ---
 
 ## C) Commit Breakdown (with Schedule)
-List commits in order (`Commit 1`, `Commit 2`, …):
-Each must include:
+Each commit includes:
 - **Scope** — module or domain affected  
 - **Timestamp** — `YYYY-MM-DD HH:MM:SS <chrono_timezone>`  
 - **Rationale** — why separated  
 - **Impact/Test** — what to verify  
-- If `granularity=H` → describe per-hunk intent or line ranges  
 
 ---
 
 ## D) Commit Message Suggestions
-For each commit:
 - If `msgs=one` → 1 variant  
 - If `msgs=three` → 3 variants  
-- Format: `type(scope): subject` (≤72 chars)  
-- Optional body bullets or footer (`Closes #123`)  
+- Format: `type(scope): subject`  
+- Optional body bullets or footer  
 
 ---
 
 ## E) Commands (print only — do not execute)
-Follow the chosen `cmd` syntax.  
-For PowerShell (`cmd=pwsh`), output should include timestamps.
 
-### 🕓 Safe Environment Mode (recommended)
+### 🕓 Safe Environment Mode
 ```powershell
 # === Day 2025-07-25 ===
 $files = @("src\\auth\\AuthService.cs")
@@ -128,22 +169,14 @@ $env:GIT_AUTHOR_DATE    = $when
 $env:GIT_COMMITTER_DATE = $when
 
 $subject = "feat(auth): implement new authentication flow"
-$body = @(
-"- Introduced token-based auth",
-"- Simplified refresh mechanism"
-)
-git commit -m $subject `
-         -m $body[0] `
-         -m $body[1]
+git commit -m $subject
 ````
 
-### ⚙️ Admin Mode (optional)
+### ⚙️ Admin Mode
 
 ```powershell
-# WARNING: Admin-only (affects system time)
 Set-Date -Date "2025-07-25 10:18"
 git commit -m "refactor(core): migrate to new service layout"
-# Reset after commit
 Set-Date -Date (Get-Date)
 ```
 
@@ -159,7 +192,6 @@ git add -p "src\\services\\OrderHandler.cs"
 ### 🔚 Reset Environment
 
 ```powershell
-# === Reset env timestamps ===
 Remove-Item Env:GIT_AUTHOR_DATE    -ErrorAction SilentlyContinue
 Remove-Item Env:GIT_COMMITTER_DATE -ErrorAction SilentlyContinue
 ```
@@ -170,14 +202,12 @@ Remove-Item Env:GIT_COMMITTER_DATE -ErrorAction SilentlyContinue
 
 (Shown only if `show_hygiene=on`)
 
-* Warn if `.env`, secrets, or credentials detected.
-* Recommend running relevant tests/lint/build for affected modules.
-* Confirm dependency and lockfile integrity before push.
+* Warn if `.env` or secrets detected.
+* Recommend running tests/lint/build.
+* Confirm dependency integrity.
 
 ---
 
 ## 🚫 If No Changes
-
-Print only:
 
 > “No local changes”
