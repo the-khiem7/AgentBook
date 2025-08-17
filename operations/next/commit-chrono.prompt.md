@@ -47,19 +47,45 @@ chrono_timezone: Timezone suffix for simulated timestamps
 show_hygiene: Controls whether to show hygiene/test/build reminders at the end.
   → "on" = show; "off" = hide.
 -->
+#=======================================================================
+# PORCELAIN INPUT (REQUIRED when diff_source=porcelain)
+# Run exactly:  git status --porcelain=v1
+# Paste RAW output below (no edits). Max ~500 lines to avoid truncation.
+#
+# Parser rules for the agent:
+# - Trust ONLY lines that start with valid 2-char XY codes (??, A , M , D , R##, C##, U ).
+# - Handle rename lines in v1 format:  R100 old/path -> new/path
+# - Treat spaces in paths literally; do NOT split on spaces inside filenames.
+# - Ignore any line that doesn’t match porcelain v1 patterns.
+#
+# >>> BEGIN PORCELAIN
+<<PASTE_GIT_STATUS_PORCELAIN_V1_HERE>>
+# <<< END PORCELAIN
+#=======================================================================
+
+#=======================================================================
+# CHANGES (OPTIONAL — for crafting better messages, NOT for file existence)
+# You may paste unified diffs from:  git diff
+# Optionally include staged diffs:    git diff --cached
+# Keep it concise (only relevant hunks) to reduce token bloat.
+#
+# >>> BEGIN CHANGES
+<<PASTE_UNIFIED_DIFFS_OPTIONAL_HERE>>
+# <<< END CHANGES
+#=======================================================================
 
 <opx type="commit-chrono">
 
   # === Core ===
-  diff_source:      porcelain       # changes | porcelain
-  granularity:      S               # S | US | H
+  diff_source:      changes         # changes | porcelain
+  granularity:      H               # S | US | H
   cmd:              pwsh            # pwsh | bash
   msgs:             one             # one | three
 
   # === Chrono Simulation ===
-  chrono_mode:      safe_env        # safe_env | admin_set_date
-  chrono_start:     2025-07-24      # YYYY-MM-DD
-  chrono_days:      5               # total days
+  chrono_mode:      admin_set_date  # safe_env | admin_set_date
+  chrono_start:     2025-08-18      # YYYY-MM-DD
+  chrono_days:      1               # total days
   chrono_per_day:   1..2            # commits/day range
   chrono_hours:     09..18          # work hours
   chrono_timezone:  +0700           # timezone offset
@@ -105,7 +131,7 @@ CHRONOBREAK POLICY:
 
 # 🧩 Commit Coach (Chronobreak Agent) — Multi-Granularity Conventional Commit Simulator
 
-Interpret diffs (from **#changes** or porcelain)  
+Interpret diffs (from #changes or porcelain)  
 and generate chronologically distributed commits with Conventional Commit messages.
 
 ---
