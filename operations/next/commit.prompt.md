@@ -2,6 +2,7 @@
 id: commit
 name: Commit Coach (Unified Granularity)
 category: commit
+version: 1.1.0
 goal: Generate precise, logically grouped git commits that follow Conventional Commits and can be safely run or rolled back
 goal-vn: Sinh ra các commit logic, nhỏ gọn và chính xác theo chuẩn Conventional Commits, đảm bảo có thể chạy hoặc hoàn tác độc lập
 command_style: PowerShell
@@ -17,7 +18,6 @@ diff_source: Source of diff content.
 granularity: Defines how small each commit should be.
   → S = small (feature or business-level)
   → US = ultra-small (atomic, line-level)
-  → H = hunk-based (commit by diff chunk)
 
 cmd: Target shell syntax for commit examples.
   → "pwsh" = PowerShell, "bash" = Linux/macOS shell.
@@ -26,13 +26,43 @@ msgs: Number of commit message suggestions per commit group.
   → "one" = single best message, "three" = 3 alternative options.
 -->
 
+#=======================================================================
+# PORCELAIN INPUT (REQUIRED when diff_source=porcelain)
+# Run exactly:  git status --porcelain=v1
+# Paste RAW output below (no edits). Max ~500 lines to avoid truncation.
+#
+# Parser rules for the agent:
+# - Trust ONLY lines that start with valid 2-char XY codes (??, A , M , D , R##, C##, U ).
+# - Handle rename lines in v1 format:  R100 old/path -> new/path
+# - Treat spaces in paths literally; do NOT split on spaces inside filenames.
+# - Ignore any line that doesn’t match porcelain v1 patterns.
+#
+# >>> BEGIN PORCELAIN
+<<PASTE_GIT_STATUS_PORCELAIN_V1_HERE>>
+# <<< END PORCELAIN
+#=======================================================================
+
+#=======================================================================
+# CHANGES (OPTIONAL — for crafting better messages, NOT for file existence)
+# You may paste unified diffs from:  git diff
+# Optionally include staged diffs:    git diff --cached
+# Keep it concise (only relevant hunks) to reduce token bloat.
+#
+# >>> BEGIN CHANGES
+<<PASTE_UNIFIED_DIFFS_OPTIONAL_HERE>>
+# <<< END CHANGES
+#=======================================================================
+
 <opx type="commit">
 
   # === Core ===
   diff_source:      porcelain       # changes | porcelain
-  granularity:      S               # S | US | H
+  granularity:      S               # S | US
   cmd:              pwsh            # pwsh | bash
   msgs:             one             # one | three
+
+  # === Optional Metadata ===
+  risk_auto:        true            # auto detect Low/Medium/High commit risk
 
 </opx>
 
@@ -53,7 +83,7 @@ INPUT SOURCES:
 
 IF #changes IS EMPTY:
 1) Print the echo line:  
-   `Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>.`
+   `Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>; Risk=auto.`
 2) Print exactly: `No local changes`
 3) Stop.
 
@@ -61,14 +91,14 @@ IF #changes IS EMPTY:
 
 # 🧩 Commit Coach — Multi-Granularity Conventional Commit Agent
 
-Interpret the provided diff content (from **#changes** or porcelain output).
+Interpret the provided diff content (from **#changes** or porcelain output).  
 Generate a **single, clean commit analysis** according to this schema.
 
 ---
 
 ## A) Echo
 Print the directive line:
-`Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>.`
+`Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>; Risk=auto.`
 
 ---
 
@@ -85,7 +115,6 @@ Each includes:
 - **Scope** — affected domain or directory  
 - **Rationale** — why separated  
 - **Impact/Test** — what to verify  
-- If `granularity=H`: show per-hunk intent or file-line ranges  
 
 ---
 
@@ -121,12 +150,6 @@ git commit -m $subject `
 ```powershell
 git mv "old/path/file.cs" "new/path/file.cs"
 git commit -m "refactor(core): rename file to match type name"
-```
-
-### **Hunk Mode**
-
-```powershell
-git add -p "src/services/UserService.cs"
 ```
 
 ---
