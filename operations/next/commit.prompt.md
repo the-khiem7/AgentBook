@@ -2,7 +2,6 @@
 id: commit
 name: Commit Coach (Unified Granularity)
 category: commit
-version: 1.1.0
 goal: Generate precise, logically grouped git commits that follow Conventional Commits and can be safely run or rolled back
 goal-vn: Sinh ra các commit logic, nhỏ gọn và chính xác theo chuẩn Conventional Commits, đảm bảo có thể chạy hoặc hoàn tác độc lập
 command_style: PowerShell
@@ -46,7 +45,7 @@ msgs: Number of commit message suggestions per commit group.
 # CHANGES (OPTIONAL — for crafting better messages, NOT for file existence)
 # You may paste unified diffs from:  git diff
 # Optionally include staged diffs:    git diff --cached
-# Keep it concise (only relevant hunks) to reduce token bloat.
+# Keep it concise (only relevant sections) to reduce token bloat.
 #
 # >>> BEGIN CHANGES
 <<PASTE_UNIFIED_DIFFS_OPTIONAL_HERE>>
@@ -60,9 +59,6 @@ msgs: Number of commit message suggestions per commit group.
   granularity:      S               # S | US
   cmd:              pwsh            # pwsh | bash
   msgs:             one             # one | three
-
-  # === Optional Metadata ===
-  risk_auto:        true            # auto detect Low/Medium/High commit risk
 
 </opx>
 
@@ -83,7 +79,7 @@ INPUT SOURCES:
 
 IF #changes IS EMPTY:
 1) Print the echo line:  
-   `Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>; Risk=auto.`
+   `Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>.`
 2) Print exactly: `No local changes`
 3) Stop.
 
@@ -97,14 +93,13 @@ Generate a **single, clean commit analysis** according to this schema.
 ---
 
 ## A) Echo
-Print the directive line:
-`Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>; Risk=auto.`
+Print the directive line:  
+`Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>.`
 
 ---
 
 ## B) Summary
 - Added / Modified / Deleted / Renamed counts  
-- Risk level (Low / Medium / High)  
 - Impacted scopes or modules  
 
 ---
@@ -130,7 +125,7 @@ For each commit group:
 ## E) Commands (print only — do not execute)
 Use syntax per `cmd`.
 
-### **PowerShell example**
+### **PowerShell Example**
 ```powershell
 # Commit <n>: <short description>
 $files = @("path/to/file1","path/to/file2")
