@@ -1,3 +1,6 @@
+Awesome — here’s your **`commit.prompt.md`** updated with the **COMMAND NOT RUN fallback alert**, and with **all hunk references removed**. It’s drop-in ready.
+
+````md
 <!-- agent-ignore:start -->
 id: commit
 name: Commit Coach (Unified Granularity)
@@ -11,12 +14,12 @@ tags: [git, commit, conventional-commits, vscode-agent, powershell]
 <!-- 📘 OPX CONFIG GUIDE
 
 diff_source: Source of diff content.
-  → "changes" = analyze #changes context (AI agent internal)
+  → "changes"   = analyze #changes context (AI agent internal)
   → "porcelain" = analyze pasted output from `git status --porcelain=v1`
 
 granularity: Defines how small each commit should be.
-  → S = small (feature or business-level)
-  → US = ultra-small (atomic, line-level)
+  → S  = small (feature or business-level)
+  → US = ultra-small (atomic, micro-group)
 
 cmd: Target shell syntax for commit examples.
   → "pwsh" = PowerShell, "bash" = Linux/macOS shell.
@@ -52,6 +55,26 @@ msgs: Number of commit message suggestions per commit group.
 # <<< END CHANGES
 #=======================================================================
 
+#=======================================================================
+# ⚠️ ALERT — PORCELAIN MODE REQUIRES INPUT
+#
+# If diff_source=porcelain but the PORCELAIN block above is empty,
+# the agent MUST print an instructional fallback like:
+#
+#   COMMAND NOT RUN: I could not execute git locally.
+#   Please run the command below in PowerShell and paste the raw output here.
+#
+#   PowerShell:
+#   git status --porcelain=v1
+#
+# And, if message quality needs diffs, also instruct:
+#
+#   PowerShell:
+#   git diff -U3
+#
+# Then STOP until the user provides the outputs.
+#=======================================================================
+
 <opx type="commit">
 
   # === Core ===
@@ -75,7 +98,7 @@ Read text context only. All analysis is textual, not procedural.
 
 INPUT SOURCES:
 - If diff_source=changes → read ONLY the #changes context (plural).
-- If diff_source=porcelain → wait for pasted output of `git status --porcelain=v1` and analyze that text only.
+- If diff_source=porcelain → rely ONLY on the pasted `git status --porcelain=v1`.
 
 IF #changes IS EMPTY:
 1) Print the echo line:  
@@ -87,7 +110,7 @@ IF #changes IS EMPTY:
 
 # 🧩 Commit Coach — Multi-Granularity Conventional Commit Agent
 
-Interpret the provided diff content (from **#changes** or porcelain output).  
+Interpret the provided diff content (from **#changes** or porcelain output).
 Generate a **single, clean commit analysis** according to this schema.
 
 ---
