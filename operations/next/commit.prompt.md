@@ -1,6 +1,3 @@
-Awesome — here’s your **`commit.prompt.md`** updated with the **COMMAND NOT RUN fallback alert**, and with **all hunk references removed**. It’s drop-in ready.
-
-````md
 <!-- agent-ignore:start -->
 id: commit
 name: Commit Coach (Unified Granularity)
@@ -78,7 +75,7 @@ msgs: Number of commit message suggestions per commit group.
 <opx type="commit">
 
   # === Core ===
-  diff_source:      porcelain       # changes | porcelain
+  diff_source:      changes         # changes | porcelain
   granularity:      S               # S | US
   cmd:              pwsh            # pwsh | bash
   msgs:             one             # one | three
@@ -101,9 +98,9 @@ INPUT SOURCES:
 - If diff_source=porcelain → rely ONLY on the pasted `git status --porcelain=v1`.
 
 IF #changes IS EMPTY:
-1) Print the echo line:  
-   `Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>.`
-2) Print exactly: `No local changes`
+1) Print the echo block (see section A below)
+2) Then print exactly:  
+   `No local changes`
 3) Stop.
 
 ---
@@ -116,39 +113,79 @@ Generate a **single, clean commit analysis** according to this schema.
 ---
 
 ## A) Echo
-Print the directive line:  
-`Granularity=<granularity>; Cmd=<cmd>; Msgs=<msgs>; DiffSource=<diff_source>.`
+Print the directive block showing current configuration.  
+Each element must appear on its **own line**, with an **emoji icon** and aligned formatting:
+
+```text
+🧩 Granularity = <granularity>
+💻 Cmd          = <cmd>
+💬 Msgs         = <msgs>
+🗂️ DiffSource   = <diff_source>
+````
+
+**Formatting Rules:**
+
+* Maintain the order exactly as shown above.
+* Align the equal signs visually for readability.
+* Use monospaced formatting for clean alignment.
+
+**Icons meaning:**
+
+| Element     | Icon | Description                             |
+| ----------- | ---- | --------------------------------------- |
+| Granularity | 🧩   | Commit grouping level (S / US)          |
+| Cmd         | 💻   | Target shell syntax                     |
+| Msgs        | 💬   | Number of commit messages per group     |
+| DiffSource  | 🗂️  | Input source type (changes / porcelain) |
+
+**Example (no changes case):**
+
+```text
+🧩 Granularity = S
+💻 Cmd          = pwsh
+💬 Msgs         = one
+🗂️ DiffSource   = porcelain
+
+No local changes
+```
 
 ---
 
 ## B) Summary
-- Added / Modified / Deleted / Renamed counts  
-- Impacted scopes or modules  
+
+* Added / Modified / Deleted / Renamed counts
+* Impacted scopes or modules
 
 ---
 
 ## C) Commit Breakdown
-List commits in order (`Commit 1`, `Commit 2`, …):  
+
+List commits in order (`Commit 1`, `Commit 2`, …):
 Each includes:
-- **Scope** — affected domain or directory  
-- **Rationale** — why separated  
-- **Impact/Test** — what to verify  
+
+* **Scope** — affected domain or directory
+* **Rationale** — why separated
+* **Impact/Test** — what to verify
 
 ---
 
 ## D) Commit Message Suggestions
+
 For each commit group:
-- If `msgs=one` → one message  
-- If `msgs=three` → three variants  
-- Follow Conventional Commits: `type(scope): subject` (≤72 chars)  
-- Include optional body bullets / footer (`Closes #123`)  
+
+* If `msgs=one` → one message
+* If `msgs=three` → three variants
+* Follow Conventional Commits: `type(scope): subject` (≤72 chars)
+* Include optional body bullets / footer (`Closes #123`)
 
 ---
 
 ## E) Commands (print only — do not execute)
+
 Use syntax per `cmd`.
 
 ### **PowerShell Example**
+
 ```powershell
 # Commit <n>: <short description>
 $files = @("path/to/file1","path/to/file2")
@@ -161,9 +198,9 @@ $body = @(
 git commit -m $subject `
            -m $body[0] `
            -m $body[1]
-````
+```
 
-### **Rename**
+### **Rename Example**
 
 ```powershell
 git mv "old/path/file.cs" "new/path/file.cs"
