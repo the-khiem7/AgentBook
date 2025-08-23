@@ -9,7 +9,6 @@ tags: [git, commit, conventional-commits, vscode-agent, powershell]
 <!-- agent-ignore:end -->
 
 <!-- 📘 OPX CONFIG GUIDE
-
 diff_source: Source of diff content.
   → "changes"   = analyze #changes context (AI agent internal)
   → "porcelain" = analyze pasted output from `git status --porcelain=v1`
@@ -25,57 +24,45 @@ msgs: Number of commit message suggestions per commit group.
   → "one" = single best message, "three" = 3 alternative options.
 -->
 
-#=======================================================================
-# PORCELAIN INPUT (REQUIRED when diff_source=porcelain)
-# Run exactly:  git status --porcelain=v1
-# Paste RAW output below (no edits). Max ~500 lines to avoid truncation.
-#
-# Parser rules for the agent:
-# - Trust ONLY lines that start with valid 2-char XY codes (??, A , M , D , R##, C##, U ).
-# - Handle rename lines in v1 format:  R100 old/path -> new/path
-# - Treat spaces in paths literally; do NOT split on spaces inside filenames.
-# - Ignore any line that doesn’t match porcelain v1 patterns.
-#
-# >>> BEGIN PORCELAIN
+# PORCELAIN INPUT (when diff_source=porcelain)
+Required steps
+1) Run `git status --porcelain=v1`.
+2) Paste the raw output (≤500 lines) between the markers below.
+Parser essentials
+- Only trust porcelain XY codes: ??, A , M , D , R##, C##, U.
+- Rename rows appear as: R100 old/path -> new/path (keep this whole line).
+- Preserve every space exactly as shown in filenames.
+
+>>> BEGIN PORCELAIN
 <<PASTE_GIT_STATUS_PORCELAIN_V1_HERE>>
-# <<< END PORCELAIN
-#=======================================================================
+<<< END PORCELAIN
 
-#=======================================================================
-# CHANGES (OPTIONAL — for crafting better messages, NOT for file existence)
-# You may paste unified diffs from:  git diff
-# Optionally include staged diffs:    git diff --cached
-# Keep it concise (only relevant sections) to reduce token bloat.
-#
-# >>> BEGIN CHANGES
+# CHANGES (optional diff helper)
+Use when unified diffs will help message quality.
+Recommendations
+- Run `git diff` or `git diff --cached` and copy just the useful hunks.
+- Keep snippets tight to limit prompt noise.
+
+>>> BEGIN CHANGES
 <<PASTE_UNIFIED_DIFFS_OPTIONAL_HERE>>
-# <<< END CHANGES
-#=======================================================================
+<<< END CHANGES
 
-#=======================================================================
-# ⚠️ ALERT — PORCELAIN MODE REQUIRES INPUT
-#
-# If diff_source=porcelain but the PORCELAIN block above is empty,
-# the agent MUST print an instructional fallback like:
-#
-#   COMMAND NOT RUN: I could not execute git locally.
-#   Please run the command below in PowerShell and paste the raw output here.
-#
-#   PowerShell:
-#   git status --porcelain=v1
-#
-# And, if message quality needs diffs, also instruct:
-#
-#   PowerShell:
-#   git diff -U3
-#
-# Then STOP until the user provides the outputs.
-#=======================================================================
-
+# ⚠️ PORCELAIN MODE CHECK
+Trigger: diff_source=porcelain and the PORCELAIN block above is empty.
+Response
+- Print the fallback message verbatim (below).
+- Stop processing until the user supplies porcelain output.
+Fallback message template:
+  COMMAND NOT RUN: I could not execute git locally.
+  Please run the command below in PowerShell and paste the raw output here
+  ```powershell
+  git status --porcelain=v1
+  ```
+  
 <opx type="commit">
 
   # === Core ===
-  diff_source:      changes         # changes | porcelain
+  diff_source:      porcelain         # changes | porcelain
   granularity:      S               # S | US
   cmd:              pwsh            # pwsh | bash
   msgs:             one             # one | three
