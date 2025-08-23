@@ -115,27 +115,6 @@ Each element must appear on its **own line**, with an **emoji icon** and aligned
 * Maintain the order exactly as shown above.
 * Align the equal signs visually for readability.
 * Use monospaced formatting for clean alignment.
-
-**Icons meaning:**
-
-| Element     | Icon | Description                             |
-| ----------- | ---- | --------------------------------------- |
-| Granularity | 🧩   | Commit grouping level (S / US)          |
-| Cmd         | 💻   | Target shell syntax                     |
-| Msgs        | 💬   | Number of commit messages per group     |
-| DiffSource  | 🗂️  | Input source type (changes / porcelain) |
-
-**Example (no changes case):**
-
-```text
-🧩 Granularity = S
-💻 Cmd          = pwsh
-💬 Msgs         = one
-🗂️ DiffSource   = porcelain
-
-No local changes
-```
-
 ---
 
 ## B) Summary
